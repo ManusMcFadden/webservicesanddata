@@ -11,10 +11,12 @@ router = APIRouter(
 
 @router.get("/", response_model=List[schemas.Player])
 def read_players(skip: int = 0, limit: int = 100, ioc: str = None, db: Session = Depends(get_db)):
+    '''Retrieve a list of players with optional pagination and filtering by IOC country code.'''
     return crud.get_players(db, skip=skip, limit=limit, ioc=ioc)
 
 @router.get("/{player_id}", response_model=schemas.Player)
 def read_player(player_id: int, db: Session = Depends(get_db)):
+    '''Retrieve a single player by their unique ID.'''
     db_player = crud.get_player(db, player_id=player_id)
     if db_player is None:
         raise HTTPException(status_code=404, detail="Player not found")
@@ -23,6 +25,7 @@ def read_player(player_id: int, db: Session = Depends(get_db)):
 # UPDATE: PATCH /players/{id}
 @router.patch("/{player_id}", response_model=schemas.Player)
 def update_existing_player(player_id: int, player_update: schemas.PlayerUpdate, db: Session = Depends(get_db)):
+    '''Update an existing player's information. Only the fields provided in the request will be updated.'''
     db_player = crud.update_player(db, player_id=player_id, player_update=player_update)
     if not db_player:
         raise HTTPException(status_code=404, detail="Player not found")
@@ -31,6 +34,7 @@ def update_existing_player(player_id: int, player_update: schemas.PlayerUpdate, 
 # DELETE: DELETE /players/{id}
 @router.delete("/{player_id}", response_model=schemas.DeleteResponse)
 def delete_existing_player(player_id: int, db: Session = Depends(get_db)):
+    '''Delete a player by their unique ID. Returns a confirmation message if successful.'''
     success = crud.delete_player(db, player_id=player_id)
     if not success:
         raise HTTPException(status_code=404, detail="Player not found")
@@ -40,10 +44,12 @@ def delete_existing_player(player_id: int, db: Session = Depends(get_db)):
 
 @router.get("/{player_id}/matches", response_model=List[schemas.Match])
 def read_player_matches(player_id: int, db: Session = Depends(get_db)):
+    '''Retrieve all matches involving a specific player, either as winner or loser.'''
     return crud.get_player_matches(db, player_id=player_id)
 
 @router.get("/{player_id}/rankings", response_model=List[schemas.Ranking])
 def read_player_rankings(player_id: int, db: Session = Depends(get_db)):
+    '''Retrieve all rankings for a specific player.'''
     return crud.get_player_rankings(db, player_id=player_id)
 
 @router.get("/stats/top-by-surface", response_model=List[schemas.PlayerSurfaceStat])

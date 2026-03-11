@@ -46,11 +46,13 @@ def update_ranking(ranking_date: int, player_id: int, ranking_update: schemas.Ra
 # --- CREATE (POST) ---
 @router.post("/", response_model=schemas.Ranking, status_code=201)
 def create_ranking(ranking: schemas.RankingCreate, db: Session = Depends(get_db)):
+    '''Create a new ranking entry for a player on a specific date.'''
     return crud.create_ranking(db=db, ranking=ranking)
 
 # --- DELETE ---
 @router.delete("/{ranking_date}/{player_id}")
 def delete_ranking(ranking_date: int, player_id: int, db: Session = Depends(get_db)):
+    '''Delete a specific ranking entry by date and player ID.'''
     if not crud.delete_ranking(db, ranking_date, player_id):
         raise HTTPException(status_code=404, detail="Ranking entry not found")
     return {"message": "Ranking deleted"}
