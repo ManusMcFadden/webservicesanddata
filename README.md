@@ -1,10 +1,10 @@
-# ATP Tennis Data API 🎾
+# ATP Tennis Data API
 
 A high-performance REST API built with FastAPI and SQLAlchemy to manage and analyze professional tennis data from the ATP Tour. This project transforms raw CSV datasets into a normalized relational database with advanced analytical endpoints.
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 This API provides a centralized interface for querying player profiles, match statistics, and historical rankings. Beyond standard CRUD operations, it features custom analytical engines to calculate Head-to-Head rivalries, "Giant Slayer" upsets, and all-time Hall of Fame leaderboards.
 
@@ -17,7 +17,7 @@ This API provides a centralized interface for querying player profiles, match st
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Component | Technology |
 |-----------|------------|
@@ -29,7 +29,7 @@ This API provides a centralized interface for querying player profiles, match st
 
 ---
 
-## 🚀 Setup & Installation
+## Setup & Installation
 
 ### 1. Clone the Repository
 
@@ -74,7 +74,7 @@ The server will start at `http://127.0.0.1:8000`.
 
 ---
 
-## 📖 API Documentation
+## API Documentation
 
 Once the server is running, you can access the interactive documentation at:
 
@@ -83,18 +83,17 @@ Once the server is running, you can access the interactive documentation at:
 
 ---
 
-## 📊 Advanced Endpoints
+## Advanced Endpoints
 
 | Endpoint | Description |
 |----------|-------------|
 | `GET /matches/h2h/{p1}/{p2}` | Comprehensive rivalry analysis between two players |
-| `GET /rankings/history/{id}` | All-time career rank progression (Time-series) |
 | `GET /players/stats/service-kings` | Leaderboard of players with the highest average aces |
 | `GET /players/stats/giant-slayers` | Identifying players with the most high-ranking upset wins |
 | `GET /rankings/stats/hall-of-fame` | All-time leaders for most weeks spent at World No. 1 |
 
 ---
 
-## 🗄 Database Design
+## Database Design
 
 The project adheres to relational database best practices. By utilizing SQLAlchemy Relationships, the API can serve complex, nested JSON objects (e.g., a Match object containing full Player objects) while maintaining a clean, non-redundant database back-end.
