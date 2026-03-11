@@ -76,6 +76,8 @@ The server will start at `http://127.0.0.1:8000`.
 
 ## API Documentation
 
+The full technical specification for this API, including example payloads and response schemas, is available in the [API_Documentation.pdf](./API_Documentation.pdf) file included in this repository.
+
 Once the server is running, you can access the interactive documentation at:
 
 - **Swagger UI**: http://127.0.0.1:8000/docs
