@@ -7,14 +7,26 @@ from typing import Optional
 
 router = APIRouter(prefix="/rankings", tags=["rankings"])
 
+COMMON_ERRORS = {
+    200: {"description": "Successful operation."},
+    201: {"description": "Resource created successfully."},
+    400: {"description": "Bad Request: The request was invalid or cannot be served."},
+    404: {"description": "The requested resource (Player/Match/Rank) was not found."},
+    422: {"description": "Validation Error: One or more parameters are incorrectly formatted."},
+    500: {"description": "Internal Server Error: Something went wrong on our end."}
+}
+
 # --- READ (List) ---
-@router.get("/", response_model=List[schemas.Ranking])
+@router.get("/", response_model=List[schemas.Ranking], responses={**COMMON_ERRORS})
 def read_rankings(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """Retrieve a list of rankings with pagination."""
-    return crud.get_rankings(db, skip=skip, limit=limit)
+    db_rankings = crud.get_rankings(db, skip=skip, limit=limit)
+    if not db_rankings:
+        raise HTTPException(status_code=404, detail="No rankings found.")
+    return db_rankings
 
 # --- ADVANCED ENDPOINTS ---
-@router.get("/stats/hall-of-fame", response_model=List[schemas.HallOfFamer])
+@router.get("/stats/hall-of-fame", response_model=List[schemas.HallOfFamer], responses={**COMMON_ERRORS})
 def read_hall_of_fame(limit: int = 10, db: Session = Depends(get_db)):
     """
     Returns an all-time leaderboard of players who have spent the most 
@@ -26,7 +38,7 @@ def read_hall_of_fame(limit: int = 10, db: Session = Depends(get_db)):
     return stats
 
 # --- READ (Single) ---
-@router.get("/{ranking_date}/{player_id}", response_model=schemas.Ranking)
+@router.get("/{ranking_date}/{player_id}", response_model=schemas.Ranking, responses={**COMMON_ERRORS})
 def read_ranking(ranking_date: int, player_id: int, db: Session = Depends(get_db)):
     """Retrieve a specific ranking entry by date and player ID."""
     db_rank = crud.get_ranking(db, ranking_date=ranking_date, player_id=player_id)
@@ -35,7 +47,7 @@ def read_ranking(ranking_date: int, player_id: int, db: Session = Depends(get_db
     return db_rank
 
 # --- UPDATE (PATCH) ---
-@router.patch("/{ranking_date}/{player_id}", response_model=schemas.Ranking)
+@router.patch("/{ranking_date}/{player_id}", response_model=schemas.Ranking, responses={**COMMON_ERRORS})
 def update_ranking(ranking_date: int, player_id: int, ranking_update: schemas.RankingUpdate, db: Session = Depends(get_db)):
     """Update a specific ranking entry (e.g., change rank or points)."""
     db_rank = crud.update_ranking(db, ranking_date=ranking_date, player_id=player_id, rank_update=ranking_update)
@@ -44,13 +56,16 @@ def update_ranking(ranking_date: int, player_id: int, ranking_update: schemas.Ra
     return db_rank
 
 # --- CREATE (POST) ---
-@router.post("/", response_model=schemas.Ranking, status_code=201)
+@router.post("/", response_model=schemas.Ranking, status_code=201, responses={**COMMON_ERRORS})
 def create_ranking(ranking: schemas.RankingCreate, db: Session = Depends(get_db)):
     '''Create a new ranking entry for a player on a specific date.'''
-    return crud.create_ranking(db=db, ranking=ranking)
+    db_rank = crud.create_ranking(db=db, ranking=ranking)
+    if db_rank is None:
+        raise HTTPException(status_code=400, detail="Failed to create ranking. Please check the input data.")
+    return db_rank
 
 # --- DELETE ---
-@router.delete("/{ranking_date}/{player_id}")
+@router.delete("/{ranking_date}/{player_id}", response_model=schemas.DeleteResponse, responses={**COMMON_ERRORS})
 def delete_ranking(ranking_date: int, player_id: int, db: Session = Depends(get_db)):
     '''Delete a specific ranking entry by date and player ID.'''
     if not crud.delete_ranking(db, ranking_date, player_id):

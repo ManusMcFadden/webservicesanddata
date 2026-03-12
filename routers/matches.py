@@ -6,14 +6,26 @@ from database import get_db
 
 router = APIRouter(prefix="/matches", tags=["matches"])
 
+COMMON_ERRORS = {
+    200: {"description": "Successful operation."},
+    201: {"description": "Resource created successfully."},
+    400: {"description": "Bad Request: The request was invalid or cannot be served."},
+    404: {"description": "The requested resource (Player/Match/Rank) was not found."},
+    422: {"description": "Validation Error: One or more parameters are incorrectly formatted."},
+    500: {"description": "Internal Server Error: Something went wrong on our end."}
+}
+
 # --- READ (List) ---
-@router.get("/", response_model=List[schemas.Match])
+@router.get("/", response_model=List[schemas.Match], responses={**COMMON_ERRORS})
 def read_matches(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """Retrieve a list of matches with pagination."""
-    return crud.get_matches(db, skip=skip, limit=limit)
+    db_matches = crud.get_matches(db, skip=skip, limit=limit)
+    if not db_matches:
+        raise HTTPException(status_code=404, detail="No matches found.")
+    return db_matches
 
 # --- READ (Single) ---
-@router.get("/{tourney_id}/{match_num}", response_model=schemas.Match)
+@router.get("/{tourney_id}/{match_num}", response_model=schemas.Match, responses={**COMMON_ERRORS})
 def read_match(tourney_id: str, match_num: int, db: Session = Depends(get_db)):
     """Retrieve a specific match using its tournament ID and match number."""
     db_match = crud.get_match(db, tourney_id=tourney_id, match_num=match_num)
@@ -22,13 +34,16 @@ def read_match(tourney_id: str, match_num: int, db: Session = Depends(get_db)):
     return db_match
 
 # --- CREATE (POST) ---
-@router.post("/", response_model=schemas.Match, status_code=201)
+@router.post("/", response_model=schemas.Match, status_code=201, responses={**COMMON_ERRORS})
 def create_match(match: schemas.MatchCreate, db: Session = Depends(get_db)):
     """Add a new match to the database."""
-    return crud.create_match(db=db, match=match)
+    db_match = crud.create_match(db=db, match=match)
+    if db_match is None:
+        raise HTTPException(status_code=400, detail="Failed to create match. Please check the input data.")
+    return db_match
 
 # --- UPDATE (PATCH) ---
-@router.patch("/{tourney_id}/{match_num}", response_model=schemas.Match)
+@router.patch("/{tourney_id}/{match_num}", response_model=schemas.Match, responses={**COMMON_ERRORS})
 def update_match(tourney_id: str, match_num: int, match_update: schemas.MatchUpdate, db: Session = Depends(get_db)):
     """Update specific fields of an existing match (e.g., score or duration)."""
     db_match = crud.update_match(db, tourney_id=tourney_id, match_num=match_num, match_update=match_update)
@@ -37,7 +52,7 @@ def update_match(tourney_id: str, match_num: int, match_update: schemas.MatchUpd
     return db_match
 
 # --- DELETE ---
-@router.delete("/{tourney_id}/{match_num}")
+@router.delete("/{tourney_id}/{match_num}", response_model=schemas.DeleteResponse, responses={**COMMON_ERRORS})
 def delete_match(tourney_id: str, match_num: int, db: Session = Depends(get_db)):
     """Remove a match from the database."""
     if not crud.delete_match(db, tourney_id, match_num):
@@ -45,7 +60,7 @@ def delete_match(tourney_id: str, match_num: int, db: Session = Depends(get_db))
     return {"message": "Match deleted"}
 
 # --- ADVANCED ENDPOINTS ---
-@router.get("/h2h/{p1_id}/{p2_id}", response_model=schemas.H2HStat)
+@router.get("/h2h/{p1_id}/{p2_id}", response_model=schemas.H2HStat, responses={**COMMON_ERRORS})
 def get_head_to_head(p1_id: int, p2_id: int, db: Session = Depends(get_db)):
     """
     Retrieve the head-to-head match history and win statistics between two specific players.
