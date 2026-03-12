@@ -1,19 +1,19 @@
 # ATP Tennis Data API
 
-A high-performance REST API built with FastAPI and SQLAlchemy to manage and analyze professional tennis data from the ATP Tour. This project transforms raw CSV datasets into a normalized relational database with advanced analytical endpoints.
+A high-performance REST API built with FastAPI and SQLAlchemy to manage and analyze professional tennis data from the ATP Tour. This project transforms raw CSV datasets into a normalized relational database with advanced analytical endpoints and secure access controls.
 
 ---
 
 ## Project Overview
 
-This API provides a centralized interface for querying player profiles, match statistics, and historical rankings. Beyond standard CRUD operations, it features custom analytical engines to calculate Head-to-Head rivalries, "Giant Slayer" upsets, and all-time Hall of Fame leaderboards.
+This API provides a centralized interface for querying player profiles, match statistics, and historical rankings. Beyond standard CRUD operations, it features custom analytical engines to calculate Head-to-Head rivalries and all-time Hall of Fame leaderboards.
 
 ### Key Features
 
 - **Normalized Database (3NF)**: Optimized SQLite schema that eliminates data redundancy by separating player metadata from match records.
-- **Advanced Analytics**: Custom endpoints for H2H history, rank progression over time, and service performance leaderboards.
-- **Automated Initialization**: A robust script to clean, filter, and ingest raw ATP CSV data into the relational model.
-- **Interactive Documentation**: Fully documented with Swagger UI, allowing for real-time testing of all endpoints.
+- **OAuth2 & JWT Security**: Role-based access control protecting write operations (POST, PATCH, DELETE) using industry-standard JSON Web Tokens.
+- **Professional Error Handling**: Explicitly documented HTTP status codes (200, 201, 401, 404, 422) for clear client-side debugging.
+- **Interactive Documentation**: Fully documented with Swagger UI and ReDoc, featuring an integrated "Authorize" flow for testing secure routes.
 
 ---
 
@@ -23,9 +23,10 @@ This API provides a centralized interface for querying player profiles, match st
 |-----------|------------|
 | Framework | FastAPI |
 | ORM | SQLAlchemy |
+| Security | OAuth2 (Password Flow) & JWT |
+| Hashing | Bcrypt (passlib) |
 | Database | SQLite |
 | Validation | Pydantic |
-| Data Processing | Pandas (Initial ingestion) |
 
 ---
 

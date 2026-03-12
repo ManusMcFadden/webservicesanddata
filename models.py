@@ -87,3 +87,9 @@ class Ranking(Base):
     # Add this relationship
     # This tells SQLAlchemy to fetch the Player object linked to the 'player' ID
     player_details = relationship("Player")
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
