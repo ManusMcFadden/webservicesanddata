@@ -33,6 +33,20 @@ class PlayerBase(BaseModel):
 class PlayerCreate(PlayerBase):
     player_id: int 
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "player_id": 104925,
+                "name_first": "Novak",
+                "name_last": "Djokovic",
+                "hand": "R",
+                "dob": 19870522,
+                "ioc": "SRB",
+                "height": 188.0
+            }
+        }
+    }
+
 class Player(PlayerBase):
     player_id: int
     wikidata_id: Optional[str] = None
@@ -59,6 +73,18 @@ class PlayerUpdate(BaseModel):
     hand: Optional[str] = None
     height: Optional[float] = None
     ioc: Optional[str] = None
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "name_first": "Roger",
+                "name_last": "Federer",
+                "hand": "R",
+                "height": 185.0,
+                "ioc": "SUI"
+            }
+        }
+    }
 
 # --- RANKING SCHEMAS ---
 class RankingBase(BaseModel):
@@ -101,9 +127,29 @@ class Ranking(RankingBase):
 class RankingCreate(RankingBase):
     player: int
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "ranking_date": 20240101,
+                "rank": 1,
+                "points": 11055,
+                "player": 104925
+            }
+        }
+    }
+
 class RankingUpdate(BaseModel):
     rank: Optional[int] = None
     points: Optional[int] = None
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "rank": 2,
+                "points": 10500
+            }
+        }
+    }
 
 # --- MATCH SCHEMAS ---
 
@@ -165,11 +211,44 @@ class MatchCreate(MatchBase):
     winner_id: int
     loser_id: int
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "tourney_id": "2023-520",
+                "match_num": 1,
+                "tourney_name": "Roland Garros",
+                "surface": "Clay",
+                "score": "6-3 6-2 6-3",
+                "round": "F",
+                "w_ace": 11,
+                "l_ace": 4,
+                "winner_id": 104925,
+                "loser_id": 104745
+            }
+        }
+    }
+
 class MatchUpdate(MatchBase):
     tourney_id: Optional[str] = None
     match_num: Optional[int] = None
     winner_id: Optional[int] = None
     loser_id: Optional[int] = None
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "tourney_id": "2023-520",
+                "match_num": 1,
+                "surface": "Clay",
+                "score": "6-4 6-3 6-2",
+                "round": "F",
+                "w_ace": 15,
+                "l_ace": 5,
+                "winner_id": 104925,
+                "loser_id": 104745
+            }
+        }
+    }
 
 class Match(MatchBase):
     winner_id: int
@@ -177,7 +256,35 @@ class Match(MatchBase):
     winner: Optional[Player] = None
     loser: Optional[Player] = None
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "tourney_id": "2023-520",
+                "match_num": 1,
+                "tourney_name": "Roland Garros",
+                "surface": "Clay",
+                "score": "6-3 6-2 6-3",
+                "round": "F",
+                "w_ace": 11,
+                "l_ace": 4,
+                "winner_id": 104925,
+                "loser_id": 104745,
+                "winner": {
+                    "player_id": 104925,
+                    "name_first": "Novak",
+                    "name_last": "Djokovic",
+                    "ioc": "SRB"
+                },
+                "loser": {
+                    "player_id": 104745,
+                    "name_first": "Rafael",
+                    "name_last": "Nadal",
+                    "ioc": "ESP"
+                }
+            }
+        }
+    )
 
 # --- COMPLEX RESPONSE SCHEMAS ---
 class DeleteResponse(BaseModel):
@@ -193,7 +300,29 @@ class DeleteResponse(BaseModel):
 class PlayerDetail(Player):
     rankings: List[Ranking] = []
     
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "player_id": 104925,
+                "name_first": "Novak",
+                "name_last": "Djokovic",
+                "hand": "R",
+                "dob": 19870522,
+                "ioc": "SRB",
+                "height": 188.0,
+                "wikidata_id": "Q5812",
+                "rankings": [
+                    {
+                        "ranking_date": 20240101,
+                        "rank": 1,
+                        "points": 11055,
+                        "player": 104925
+                    }
+                ]
+            }
+        }
+    )
 
 class PlayerSurfaceStat(BaseModel):
     player_id: int
