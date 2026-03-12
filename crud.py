@@ -42,6 +42,13 @@ def delete_player(db: Session, player_id: int):
         return True
     return False
 
+# Helper to fetch player by name
+def get_player_by_name(db: Session, name_first: str, name_last: str):
+    return db.query(models.Player).filter(
+        func.lower(models.Player.name_first) == name_first.lower(),
+        func.lower(models.Player.name_last) == name_last.lower()
+    ).first()
+
 # --- MATCH CRUD ---
 def get_match(db: Session, tourney_id: str, match_num: int):
     return db.query(models.Match).filter(

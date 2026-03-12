@@ -71,6 +71,16 @@ def create_new_player(player: schemas.PlayerCreate, db: Session = Depends(get_db
         raise HTTPException(status_code=400, detail="Failed to create player. Please check the input data.")
     return db_player
 
+@router.get("/player-by-name/", response_model=schemas.Player, responses={**COMMON_ERRORS})
+def read_player_by_name(name_first: str, name_last: str, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
+    '''Retrieve a player by their first and last name.'''
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Unauthorized: You must be logged in to view player information.")
+    db_player = crud.get_player_by_name(db, name_first=name_first, name_last=name_last)
+    if db_player is None:
+        raise HTTPException(status_code=404, detail="Player not found")
+    return db_player
+
 # --- ADVANCED ENDPOINTS ---
 
 @router.get("/{player_id}/matches", response_model=List[schemas.Match], responses={**COMMON_ERRORS})
