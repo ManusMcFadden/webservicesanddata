@@ -8,6 +8,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 import auth
 from fastapi import FastAPI
 from fastapi_mcp import FastApiMCP
+import os, uvicorn
 
 # Initialize the FastAPI app
 app = FastAPI(
@@ -75,5 +76,9 @@ mcp = FastApiMCP(
 )
 
 mcp.mount()
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
 
 

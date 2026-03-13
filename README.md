@@ -113,14 +113,13 @@ The API implements a tiered permission system to ensure data integrity while all
 
 **Note:** Administrative actions require a valid JWT with the `is_admin` claim set to `True`.
 
-
 ## Model Context Protocol (MCP) Compatibility
 
 This API is fully compatible with the Model Context Protocol (MCP), allowing AI agents (like Claude Desktop) to interact directly with the tennis database as a tool-calling backend.
 
 **Connection Details:**
 
-- **Transport Type:** SSE (Server-Sent Events)
+- **Transport Type:** STDIO
 - **Endpoint:** http://127.0.0.1:8000/mcp
 - **Bridge Library:** mcp-fastapi
 
@@ -132,7 +131,7 @@ This API is fully compatible with the Model Context Protocol (MCP), allowing AI 
 	```
 2. Launch the Inspector:
 	```bash
-	npx @modelcontextprotocol/inspector python main.py
+	npx @modelcontextprotocol/inspector python mcp.py
 	```
 
 ---
