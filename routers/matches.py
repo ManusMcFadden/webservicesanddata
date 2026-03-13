@@ -11,6 +11,7 @@ COMMON_ERRORS = {
     201: {"description": "Resource created successfully."},
     400: {"description": "Bad Request: The request was invalid or cannot be served."},
     401: {"description": "Unauthorized: You must be logged in to perform this action."},
+    403: {"description": "Forbidden: You do not have permission to perform this action."},
     404: {"description": "The requested resource (Player/Match/Rank) was not found."},
     422: {"description": "Validation Error: One or more parameters are incorrectly formatted."},
     500: {"description": "Internal Server Error: Something went wrong on our end."}
@@ -44,6 +45,8 @@ def create_match(match: schemas.MatchCreate, db: Session = Depends(get_db), curr
     """Add a new match to the database."""
     if not current_user:
         raise HTTPException(status_code=401, detail="Unauthorized: You must be logged in to create a match.")
+    if not getattr(current_user, "is_admin", False):
+        raise HTTPException(status_code=403, detail="Forbidden: Only admins can create matches.")
     db_match = crud.create_match(db=db, match=match)
     if db_match is None:
         raise HTTPException(status_code=400, detail="Failed to create match. Please check the input data.")
@@ -55,6 +58,8 @@ def update_match(tourney_id: str, match_num: int, match_update: schemas.MatchUpd
     """Update specific fields of an existing match (e.g., score or duration)."""
     if not current_user:
         raise HTTPException(status_code=401, detail="Unauthorized: You must be logged in to update a match.")
+    if not getattr(current_user, "is_admin", False):
+        raise HTTPException(status_code=403, detail="Forbidden: Only admins can update matches.")
     db_match = crud.update_match(db, tourney_id=tourney_id, match_num=match_num, match_update=match_update)
     if db_match is None:
         raise HTTPException(status_code=404, detail="Match not found")
@@ -66,6 +71,8 @@ def delete_match(tourney_id: str, match_num: int, db: Session = Depends(get_db),
     """Remove a match from the database."""
     if not current_user:
         raise HTTPException(status_code=401, detail="Unauthorized: You must be logged in to delete a match.")
+    if not getattr(current_user, "is_admin", False):
+        raise HTTPException(status_code=403, detail="Forbidden: Only admins can delete matches.")
     if not crud.delete_match(db, tourney_id, match_num):
         raise HTTPException(status_code=404, detail="Match not found")
     return {"message": "Match deleted"}

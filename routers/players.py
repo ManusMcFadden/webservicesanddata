@@ -14,6 +14,7 @@ COMMON_ERRORS = {
     201: {"description": "Resource created successfully."},
     400: {"description": "Bad Request: The request was invalid or cannot be served."},
     401: {"description": "Unauthorized: You must be logged in to perform this action."},
+    403: {"description": "Forbidden: You do not have permission to perform this action."},
     404: {"description": "The requested resource (Player/Match/Rank) was not found."},
     422: {"description": "Validation Error: One or more parameters are incorrectly formatted."},
     500: {"description": "Internal Server Error: Something went wrong on our end."}
@@ -45,6 +46,8 @@ def update_existing_player(player_id: int, player_update: schemas.PlayerUpdate, 
     '''Update an existing player's information. Only the fields provided in the request will be updated.'''
     if not current_user:
         raise HTTPException(status_code=401, detail="Unauthorized: You must be logged in to update a player.")
+    if not getattr(current_user, "is_admin", False):
+        raise HTTPException(status_code=403, detail="Forbidden: Only admins can update player information.")
     db_player = crud.update_player(db, player_id=player_id, player_update=player_update)
     if not db_player:
         raise HTTPException(status_code=404, detail="Player not found")
@@ -56,6 +59,8 @@ def delete_existing_player(player_id: int, db: Session = Depends(get_db), curren
     '''Delete a player by their unique ID. Returns a confirmation message if successful.'''
     if not current_user:
         raise HTTPException(status_code=401, detail="Unauthorized: You must be logged in to delete a player.")
+    if not getattr(current_user, "is_admin", False):
+        raise HTTPException(status_code=403, detail="Forbidden: Only admins can delete players.")
     success = crud.delete_player(db, player_id=player_id)
     if not success:
         raise HTTPException(status_code=404, detail="Player not found")
@@ -66,6 +71,8 @@ def create_new_player(player: schemas.PlayerCreate, db: Session = Depends(get_db
     '''Create a new player with the provided information.'''
     if not current_user:
         raise HTTPException(status_code=401, detail="Unauthorized: You must be logged in to create a player.")
+    if not getattr(current_user, "is_admin", False):
+        raise HTTPException(status_code=403, detail="Forbidden: Only admins can create players.")
     db_player = crud.create_player(db=db, player=player)
     if db_player is None:
         raise HTTPException(status_code=400, detail="Failed to create player. Please check the input data.")

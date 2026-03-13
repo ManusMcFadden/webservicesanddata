@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean
 from database import Base
 from sqlalchemy.orm import relationship
+
 
 class Player(Base):
     __tablename__ = "players"
@@ -84,7 +85,6 @@ class Ranking(Base):
     rank = Column(Integer)
     points = Column(Integer)
 
-    # Add this relationship
     # This tells SQLAlchemy to fetch the Player object linked to the 'player' ID
     player_details = relationship("Player")
 
@@ -93,3 +93,4 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
+    is_admin = Column(Boolean, default=False)

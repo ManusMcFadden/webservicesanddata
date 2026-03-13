@@ -432,3 +432,15 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: Optional[str] = None
+
+class UserCreate(BaseModel):
+    username: str
+    password: str
+
+class UserOut(BaseModel):
+    id: int
+    username: str
+    is_admin: bool  # Shows role, but hides the password!
+
+    class Config:
+        orm_mode = True # or from_attributes = True if using Pydantic v2

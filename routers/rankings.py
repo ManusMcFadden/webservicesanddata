@@ -12,6 +12,7 @@ COMMON_ERRORS = {
     201: {"description": "Resource created successfully."},
     400: {"description": "Bad Request: The request was invalid or cannot be served."},
     401: {"description": "Unauthorized: You must be logged in to perform this action."},
+    403: {"description": "Forbidden: You do not have permission to perform this action."},
     404: {"description": "The requested resource (Player/Match/Rank) was not found."},
     422: {"description": "Validation Error: One or more parameters are incorrectly formatted."},
     500: {"description": "Internal Server Error: Something went wrong on our end."}
@@ -59,6 +60,8 @@ def update_ranking(ranking_date: int, player_id: int, ranking_update: schemas.Ra
     """Update a specific ranking entry (e.g., change rank or points)."""
     if not current_user:
         raise HTTPException(status_code=401, detail="Unauthorized: You must be logged in to update ranking entries.")
+    if not getattr(current_user, "is_admin", False):
+        raise HTTPException(status_code=403, detail="Forbidden: Only admins can update ranking entries.")
     db_rank = crud.update_ranking(db, ranking_date=ranking_date, player_id=player_id, rank_update=ranking_update)
     if db_rank is None:
         raise HTTPException(status_code=404, detail="Ranking entry not found")
@@ -70,6 +73,8 @@ def create_ranking(ranking: schemas.RankingCreate, db: Session = Depends(get_db)
     """Create a new ranking entry for a player on a specific date."""
     if not current_user:
         raise HTTPException(status_code=401, detail="Unauthorized: You must be logged in to create ranking entries.")
+    if not getattr(current_user, "is_admin", False):
+        raise HTTPException(status_code=403, detail="Forbidden: Only admins can create ranking entries.")
     db_rank = crud.create_ranking(db=db, ranking=ranking)
     if db_rank is None:
         raise HTTPException(status_code=400, detail="Failed to create ranking. Please check the input data.")
@@ -81,6 +86,8 @@ def delete_ranking(ranking_date: int, player_id: int, db: Session = Depends(get_
     """Delete a specific ranking entry by date and player ID."""
     if not current_user:
         raise HTTPException(status_code=401, detail="Unauthorized: You must be logged in to delete ranking entries.")
+    if not getattr(current_user, "is_admin", False):
+        raise HTTPException(status_code=403, detail="Forbidden: Only admins can delete ranking entries.")
     if not crud.delete_ranking(db, ranking_date, player_id):
         raise HTTPException(status_code=404, detail="Ranking entry not found")
     return {"message": "Ranking deleted"}
