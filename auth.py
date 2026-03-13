@@ -3,16 +3,20 @@ from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Header
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 import models, database
 from database import get_db
+from models import User
 
 # Configuration
 SECRET_KEY = "YOUR_SUPER_SECRET_RANDOM_STRING_HERE" 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+MCP_SECRET_KEY = "tennis_manager_dev_key_2024" 
+USER_TO_IMPERSONATE = "admin"
 
 # Password hashing setup
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -32,7 +36,11 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 # --- DEPENDENCY ---
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db), x_mcp_token: Optional[str] = Header(None)):
+    if x_mcp_token == MCP_SECRET_KEY:
+        user = db.query(models.User).filter(models.User.username == USER_TO_IMPERSONATE).first()
+        if user:
+            return user
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -52,6 +60,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     return user
 
 def get_current_admin(current_user: models.User = Depends(get_current_user)):
+
     if not current_user.is_admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

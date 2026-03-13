@@ -19,7 +19,7 @@ COMMON_ERRORS = {
 }
 
 # --- READ (List) ---
-@router.get("/", response_model=List[schemas.Ranking], responses={**COMMON_ERRORS})
+@router.get("/", response_model=List[schemas.Ranking], responses={**COMMON_ERRORS}, operation_id="read_rankings")
 def read_rankings(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     """Retrieve a list of rankings with pagination."""
     if not current_user:
@@ -30,7 +30,7 @@ def read_rankings(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
     return db_rankings
 
 # --- ADVANCED ENDPOINTS ---
-@router.get("/stats/hall-of-fame", response_model=List[schemas.HallOfFamer], responses={**COMMON_ERRORS})
+@router.get("/stats/hall-of-fame", response_model=List[schemas.HallOfFamer], responses={**COMMON_ERRORS}, operation_id="read_hall_of_fame")
 def read_hall_of_fame(limit: int = 10, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     """
     Returns an all-time leaderboard of players who have spent the most 
@@ -44,7 +44,7 @@ def read_hall_of_fame(limit: int = 10, db: Session = Depends(get_db), current_us
     return stats
 
 # --- READ (Single) ---
-@router.get("/{ranking_date}/{player_id}", response_model=schemas.Ranking, responses={**COMMON_ERRORS})
+@router.get("/{ranking_date}/{player_id}", response_model=schemas.Ranking, responses={**COMMON_ERRORS}, operation_id="read_ranking")
 def read_ranking(ranking_date: int, player_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     """Retrieve a specific ranking entry by date and player ID."""
     if not current_user:
@@ -55,7 +55,7 @@ def read_ranking(ranking_date: int, player_id: int, db: Session = Depends(get_db
     return db_rank
 
 # --- UPDATE (PATCH) ---
-@router.patch("/{ranking_date}/{player_id}", response_model=schemas.Ranking, responses={**COMMON_ERRORS})
+@router.patch("/{ranking_date}/{player_id}", response_model=schemas.Ranking, responses={**COMMON_ERRORS}, operation_id="update_ranking")
 def update_ranking(ranking_date: int, player_id: int, ranking_update: schemas.RankingUpdate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     """Update a specific ranking entry (e.g., change rank or points)."""
     if not current_user:
@@ -68,7 +68,7 @@ def update_ranking(ranking_date: int, player_id: int, ranking_update: schemas.Ra
     return db_rank
 
 # --- CREATE (POST) ---
-@router.post("/", response_model=schemas.Ranking, status_code=201, responses={**COMMON_ERRORS})
+@router.post("/", response_model=schemas.Ranking, status_code=201, responses={**COMMON_ERRORS}, operation_id="create_ranking")
 def create_ranking(ranking: schemas.RankingCreate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     """Create a new ranking entry for a player on a specific date."""
     if not current_user:
@@ -81,7 +81,7 @@ def create_ranking(ranking: schemas.RankingCreate, db: Session = Depends(get_db)
     return db_rank
 
 # --- DELETE ---
-@router.delete("/{ranking_date}/{player_id}", response_model=schemas.DeleteResponse, responses={**COMMON_ERRORS})
+@router.delete("/{ranking_date}/{player_id}", response_model=schemas.DeleteResponse, responses={**COMMON_ERRORS}, operation_id="delete_ranking")
 def delete_ranking(ranking_date: int, player_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     """Delete a specific ranking entry by date and player ID."""
     if not current_user:

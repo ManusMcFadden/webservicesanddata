@@ -20,7 +20,7 @@ COMMON_ERRORS = {
     500: {"description": "Internal Server Error: Something went wrong on our end."}
 }
 
-@router.get("/", response_model=List[schemas.Player], responses={**COMMON_ERRORS})
+@router.get("/", response_model=List[schemas.Player], responses={**COMMON_ERRORS}, operation_id="read_players")
 def read_players(skip: int = 0, limit: int = 100, ioc: str = None, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     '''Retrieve a list of players with optional pagination and filtering by IOC country code.'''
     if not current_user:
@@ -30,7 +30,7 @@ def read_players(skip: int = 0, limit: int = 100, ioc: str = None, db: Session =
         raise HTTPException(status_code=404, detail="No players found.")
     return db_players
 
-@router.get("/{player_id}", response_model=schemas.Player, responses={**COMMON_ERRORS})
+@router.get("/{player_id}", response_model=schemas.Player, responses={**COMMON_ERRORS}, operation_id="read_player")
 def read_player(player_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     '''Retrieve a single player by their unique ID.'''
     if not current_user:
@@ -41,7 +41,7 @@ def read_player(player_id: int, db: Session = Depends(get_db), current_user: mod
     return db_player
 
 # UPDATE: PATCH /players/{id}
-@router.patch("/{player_id}", response_model=schemas.Player, responses={**COMMON_ERRORS})
+@router.patch("/{player_id}", response_model=schemas.Player, responses={**COMMON_ERRORS}, operation_id="update_existing_player")
 def update_existing_player(player_id: int, player_update: schemas.PlayerUpdate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     '''Update an existing player's information. Only the fields provided in the request will be updated.'''
     if not current_user:
@@ -54,7 +54,7 @@ def update_existing_player(player_id: int, player_update: schemas.PlayerUpdate, 
     return db_player
 
 # DELETE: DELETE /players/{id}
-@router.delete("/{player_id}", response_model=schemas.DeleteResponse, responses={**COMMON_ERRORS})
+@router.delete("/{player_id}", response_model=schemas.DeleteResponse, responses={**COMMON_ERRORS}, operation_id="delete_existing_player")
 def delete_existing_player(player_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     '''Delete a player by their unique ID. Returns a confirmation message if successful.'''
     if not current_user:
@@ -66,7 +66,7 @@ def delete_existing_player(player_id: int, db: Session = Depends(get_db), curren
         raise HTTPException(status_code=404, detail="Player not found")
     return {"message": "Player deleted successfully", "player_id": player_id}
 
-@router.post("/", response_model=schemas.Player, status_code=201, responses={**COMMON_ERRORS})
+@router.post("/", response_model=schemas.Player, status_code=201, responses={**COMMON_ERRORS}, operation_id="create_new_player")
 def create_new_player(player: schemas.PlayerCreate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     '''Create a new player with the provided information.'''
     if not current_user:
@@ -78,7 +78,7 @@ def create_new_player(player: schemas.PlayerCreate, db: Session = Depends(get_db
         raise HTTPException(status_code=400, detail="Failed to create player. Please check the input data.")
     return db_player
 
-@router.get("/player-by-name/", response_model=schemas.Player, responses={**COMMON_ERRORS})
+@router.get("/player-by-name/", response_model=schemas.Player, responses={**COMMON_ERRORS}, operation_id="read_player_by_name")
 def read_player_by_name(name_first: str, name_last: str, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     '''Retrieve a player by their first and last name.'''
     if not current_user:
@@ -90,7 +90,7 @@ def read_player_by_name(name_first: str, name_last: str, db: Session = Depends(g
 
 # --- ADVANCED ENDPOINTS ---
 
-@router.get("/{player_id}/matches", response_model=List[schemas.Match], responses={**COMMON_ERRORS})
+@router.get("/{player_id}/matches", response_model=List[schemas.Match], responses={**COMMON_ERRORS}, operation_id="read_player_matches")
 def read_player_matches(player_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     '''Retrieve all matches involving a specific player, either as winner or loser.'''
     if not current_user:
@@ -100,7 +100,7 @@ def read_player_matches(player_id: int, db: Session = Depends(get_db), current_u
         raise HTTPException(status_code=404, detail="No matches found for this player.")
     return db_matches
 
-@router.get("/{player_id}/rankings", response_model=List[schemas.Ranking], responses={**COMMON_ERRORS})
+@router.get("/{player_id}/rankings", response_model=List[schemas.Ranking], responses={**COMMON_ERRORS}, operation_id="read_player_rankings")
 def read_player_rankings(player_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     '''Retrieve all rankings for a specific player.'''
     if not current_user:
@@ -110,7 +110,7 @@ def read_player_rankings(player_id: int, db: Session = Depends(get_db), current_
         raise HTTPException(status_code=404, detail="No rankings found for this player.")
     return db_rankings
 
-@router.get("/stats/top-by-surface", response_model=List[schemas.PlayerSurfaceStat], responses={**COMMON_ERRORS})
+@router.get("/stats/top-by-surface", response_model=List[schemas.PlayerSurfaceStat], responses={**COMMON_ERRORS}, operation_id="read_top_players")
 def read_top_players(
     surface: schemas.SurfaceType = schemas.SurfaceType.clay, 
     limit: int = 10, 
@@ -129,7 +129,7 @@ def read_top_players(
         raise HTTPException(status_code=404, detail="No players found for the specified surface.")
     return db_players
 
-@router.get("/stats/service-kings", response_model=List[schemas.ServiceKing], responses={**COMMON_ERRORS})
+@router.get("/stats/service-kings", response_model=List[schemas.ServiceKing], responses={**COMMON_ERRORS}, operation_id="read_service_kings")
 def read_service_kings(limit: int = 10, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     """
     Get a leaderboard of the best servers (highest average aces per win).
@@ -142,7 +142,7 @@ def read_service_kings(limit: int = 10, db: Session = Depends(get_db), current_u
         raise HTTPException(status_code=404, detail="No service statistics found.")
     return stats
 
-@router.get("/stats/giant-slayers", response_model=List[schemas.GiantSlayer], responses={**COMMON_ERRORS})
+@router.get("/stats/giant-slayers", response_model=List[schemas.GiantSlayer], responses={**COMMON_ERRORS}, operation_id="read_giant_slayers")
 def read_giant_slayers(min_gap: int = 50, limit: int = 10, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     """
     Returns a leaderboard of players with the most 'upset' wins.

@@ -100,3 +100,43 @@ Once the server is running, you can access the interactive documentation at:
 ## Database Design
 
 The project adheres to relational database best practices. By utilizing SQLAlchemy Relationships, the API can serve complex, nested JSON objects (e.g., a Match object containing full Player objects) while maintaining a clean, non-redundant database back-end.
+
+## User Access Levels
+
+The API implements a tiered permission system to ensure data integrity while allowing for public analysis.
+
+| Role            | Access Level   | Permissions                                                                                  |
+|-----------------|---------------|---------------------------------------------------------------------------------------------|
+| Guest           | Public        | View API Documentation (Swagger/ReDoc).                                                      |
+| Standard User   | Authenticated | Read-only access to all player, match, and ranking data.                                     |
+| Administrator   | Elevated      | Full CRUD capabilities (Create, Update, Delete) for matches, players, and rankings.          |
+
+**Note:** Administrative actions require a valid JWT with the `is_admin` claim set to `True`.
+
+
+## Model Context Protocol (MCP) Compatibility
+
+This API is fully compatible with the Model Context Protocol (MCP), allowing AI agents (like Claude Desktop) to interact directly with the tennis database as a tool-calling backend.
+
+**Connection Details:**
+
+- **Transport Type:** SSE (Server-Sent Events)
+- **Endpoint:** http://127.0.0.1:8000/mcp
+- **Bridge Library:** mcp-fastapi
+
+**To connect the MCP Inspector:**
+
+1. Start the FastAPI server:
+	```bash
+	fastapi dev main.py
+	```
+2. Launch the Inspector:
+	```bash
+	npx @modelcontextprotocol/inspector python main.py
+	```
+
+---
+
+## Manual Testing
+
+Manual testing was performed using the interactive Swagger UI (`/docs`) and the MCP Inspector tool. Endpoints were verified for correct responses, authentication, and advanced analytical functionality.

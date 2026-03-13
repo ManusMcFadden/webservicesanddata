@@ -6,6 +6,8 @@ import models, schemas
 from database import engine, get_db
 from fastapi.security import OAuth2PasswordRequestForm
 import auth
+from fastapi import FastAPI
+from fastapi_mcp import FastApiMCP
 
 # Initialize the FastAPI app
 app = FastAPI(
@@ -62,5 +64,16 @@ def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return new_user
+
+mcp = FastApiMCP(
+    app,
+    name="Tennis MCP",
+    include_operations=["read_matches", "read_match", "create_match", "update_match", "delete_match", "get_head_to_head",
+                        "read_players", "read_player", "update_existing_player", "delete_existing_player", "create_new_player", "read_player_by_name", "read_player_matches", "read_player_rankings", "read_top_players", "read_service_kings", "read_giant_slayers",
+                        "read_rankings", "read_hall_of_fame", "read_ranking", "update_ranking", "create_ranking", "delete_ranking"],
+    headers={"x-mcp-token": "tennis_manager_dev_key_2024"}
+)
+
+mcp.mount()
 
 

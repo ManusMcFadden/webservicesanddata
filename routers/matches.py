@@ -18,7 +18,7 @@ COMMON_ERRORS = {
 }
 
 # --- READ (List) ---
-@router.get("/", response_model=List[schemas.Match], responses={**COMMON_ERRORS})
+@router.get("/", response_model=List[schemas.Match], responses={**COMMON_ERRORS}, operation_id="read_matches")
 def read_matches(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     """Retrieve a list of matches with pagination."""
     if not current_user:
@@ -29,7 +29,7 @@ def read_matches(skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
     return db_matches
 
 # --- READ (Single) ---
-@router.get("/{tourney_id}/{match_num}", response_model=schemas.Match, responses={**COMMON_ERRORS})
+@router.get("/{tourney_id}/{match_num}", response_model=schemas.Match, responses={**COMMON_ERRORS}, operation_id="read_match")
 def read_match(tourney_id: str, match_num: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     """Retrieve a specific match using its tournament ID and match number."""
     if not current_user:
@@ -40,7 +40,7 @@ def read_match(tourney_id: str, match_num: int, db: Session = Depends(get_db), c
     return db_match
 
 # --- CREATE (POST) ---
-@router.post("/", response_model=schemas.Match, status_code=201, responses={**COMMON_ERRORS})
+@router.post("/", response_model=schemas.Match, status_code=201, responses={**COMMON_ERRORS}, operation_id="create_match")
 def create_match(match: schemas.MatchCreate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     """Add a new match to the database."""
     if not current_user:
@@ -53,7 +53,7 @@ def create_match(match: schemas.MatchCreate, db: Session = Depends(get_db), curr
     return db_match
 
 # --- UPDATE (PATCH) ---
-@router.patch("/{tourney_id}/{match_num}", response_model=schemas.Match, responses={**COMMON_ERRORS})
+@router.patch("/{tourney_id}/{match_num}", response_model=schemas.Match, responses={**COMMON_ERRORS}, operation_id="update_match")
 def update_match(tourney_id: str, match_num: int, match_update: schemas.MatchUpdate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     """Update specific fields of an existing match (e.g., score or duration)."""
     if not current_user:
@@ -66,7 +66,7 @@ def update_match(tourney_id: str, match_num: int, match_update: schemas.MatchUpd
     return db_match
 
 # --- DELETE ---
-@router.delete("/{tourney_id}/{match_num}", response_model=schemas.DeleteResponse, responses={**COMMON_ERRORS})
+@router.delete("/{tourney_id}/{match_num}", response_model=schemas.DeleteResponse, responses={**COMMON_ERRORS}, operation_id="delete_match")
 def delete_match(tourney_id: str, match_num: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     """Remove a match from the database."""
     if not current_user:
@@ -78,7 +78,7 @@ def delete_match(tourney_id: str, match_num: int, db: Session = Depends(get_db),
     return {"message": "Match deleted"}
 
 # --- ADVANCED ENDPOINTS ---
-@router.get("/h2h/{p1_id}/{p2_id}", response_model=schemas.H2HStat, responses={**COMMON_ERRORS})
+@router.get("/h2h/{p1_id}/{p2_id}", response_model=schemas.H2HStat, responses={**COMMON_ERRORS}, operation_id="get_head_to_head")
 def get_head_to_head(p1_id: int, p2_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     """
     Retrieve the head-to-head match history and win statistics between two specific players.
