@@ -14,6 +14,13 @@ import os, uvicorn
 app = FastAPI(
     title="Tennis Statistics API",
     description="""COMP3011 Project: ATP Match and Ranking Data (2020-2024)\n
+    ##Authentication\n
+    The API uses OAuth2 with JWT tokens for authentication:\n
+    * **POST /signup**: Create a new user account with a username and password. Returns user details.\n
+    * **POST /login**: Authenticate with username and password. Returns a JWT access token with 'bearer' type.\n
+    * **Token Usage**: Include the JWT token in the Authorization header as 'Bearer <token>' when making authenticated requests.\n
+    * **Token Security**: Passwords are hashed using industry-standard algorithms before storage. Tokens are signed and expire after a set duration.\n
+    \n
     ##Error Handling Standards\n
     The API follows standard HTTP status codes:\n
     * **200 OK**: The request was successful.\n

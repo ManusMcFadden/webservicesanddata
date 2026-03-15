@@ -35,7 +35,7 @@ This API provides a centralized interface for querying player profiles, match st
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/ManusMcFadden/webservicesanddata.git
 cd tennis-atp-api
 ```
 
@@ -57,14 +57,6 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Initialize the Database
-
-Ensure your ATP CSV files are in the designated data folder, then run the initialization script to build your SQLite database:
-
-```bash
-python init_db.py
-```
-
 ### 5. Run the API
 
 ```bash
@@ -74,6 +66,16 @@ fastapi dev main.py
 The server will start at `http://127.0.0.1:8000`.
 
 ---
+
+## Web Access
+
+This API has been deployed on Google Cloud.
+
+Web Access is available at https://webservicesanddata-1083314966502.europe-west9.run.app/docs
+
+## Usage
+
+On the /docs webpage, you should click the Authorize button and enter the username "admin" and password "tennis_password_2024" for access to all endpoints. To use them click the try me out button, enter input details where necessary, and click execute. If you only want access to GET endpoints, use the public signup endpoint to create a username and password, then use it to login with the authorize button.
 
 ## API Documentation
 
