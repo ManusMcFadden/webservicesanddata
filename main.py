@@ -16,21 +16,36 @@ app = FastAPI(
     description="""COMP3011 Project: ATP Match and Ranking Data (2020-2024)\n
     ##Authentication\n
     The API uses OAuth2 with JWT tokens for authentication:\n
-    * **POST /signup**: Create a new user account with a username and password. Returns user details.\n
-    * **POST /login**: Authenticate with username and password. Returns a JWT access token with 'bearer' type.\n
-    * **Token Usage**: Include the JWT token in the Authorization header as 'Bearer <token>' when making authenticated requests.\n
-    * **Token Security**: Passwords are hashed using industry-standard algorithms before storage. Tokens are signed and expire after a set duration.\n
+    * **POST /signup**: Create a new user account with a username and password.\n
+    Returns user details.\n
+    * **POST /login**: Authenticate with username and password. Returns a JWT\n
+    access token with 'bearer' type.\n
+    * **Token Usage**: Include the JWT token in the Authorization header as\n
+    'Bearer <token>' when making authenticated requests.\n
+    * **Token Security**: Passwords are hashed using industry-standard algorithms\n
+    before storage. Tokens are signed and expire after a set duration.\n
     \n
     ##Error Handling Standards\n
     The API follows standard HTTP status codes:\n
     * **200 OK**: The request was successful.\n
-    * **201 Created**: A new resource was successfully created (e.g., a new player, match, or ranking entry).\n
-    * **400 Bad Request**: The request was invalid or cannot be served. This can occur if required fields are missing, data types are incorrect, or if the request body is malformed.\n
-    * **401 Unauthorized**: You must be logged in to perform this action. This status is returned when authentication credentials are missing or invalid.\n
-    * **403 Forbidden**: You do not have permission to perform this action. This status is returned when the user is authenticated but does not have the necessary permissions (e.g., trying to delete a player without admin rights).\n
-    * **404 Not Found**: The requested resource (Player/Match/Rank) was not found. This can happen if you try to access a player, match, or ranking entry that does not exist in the database.\n
-    * **422 Unprocessable Entity**: Validation error when the input data is correctly formatted but semantically incorrect (e.g., trying to create a match with non-existent player IDs).\n
-    * **500 Internal Server Error**: Something went wrong on our end. This indicates an unexpected error occurred while processing the request.""",
+    * **201 Created**: A new resource was successfully created (e.g., a new player,\n
+    match, or ranking entry).\n
+    * **400 Bad Request**: The request was invalid or cannot be served. This can\n
+    occur if required fields are missing, data types are incorrect, or if the\n
+    request body is malformed.\n
+    * **401 Unauthorized**: You must be logged in to perform this action. This\n
+    status is returned when authentication credentials are missing or invalid.\n
+    * **403 Forbidden**: You do not have permission to perform this action. This\n
+    status is returned when the user is authenticated but does not have the\n
+    necessary permissions (e.g., trying to delete a player without admin rights).\n
+    * **404 Not Found**: The requested resource (Player/Match/Rank) was not found.\n
+    This can happen if you try to access a player, match, or ranking entry that\n
+    does not exist in the database.\n
+    * **422 Unprocessable Entity**: Validation error when the input data is\n
+    correctly formatted but semantically incorrect (e.g., trying to create a match\n
+    with non-existent player IDs).\n
+    * **500 Internal Server Error**: Something went wrong on our end. This\n
+    indicates an unexpected error occurred while processing the request.""",
     version="1.0.0"
 )
 
