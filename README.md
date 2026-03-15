@@ -122,18 +122,18 @@ This API is fully compatible with the Model Context Protocol (MCP), allowing AI 
 **Connection Details:**
 
 - **Transport Type:** STDIO
-- **Endpoint:** http://127.0.0.1:8000/mcp
+- **Endpoint:** http://127.0.0.1:8000/
 - **Bridge Library:** mcp-fastapi
 
 **To connect the MCP Inspector:**
 
 1. Start the FastAPI server:
 	```bash
-	fastapi dev main.py
+	fastapi dev tennis_mcp.py
 	```
 2. Launch the Inspector:
 	```bash
-	npx @modelcontextprotocol/inspector python mcp.py
+	npx @modelcontextprotocol/inspector python tennis_mcp.py
 	```
 
 ---
